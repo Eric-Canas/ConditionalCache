@@ -1,0 +1,12 @@
+
+.idea/
+
+dist/
+
+circular_dict.egg-info/
+
+*.pyc
+
+build/
+
+conditional_cache.egg-info/
