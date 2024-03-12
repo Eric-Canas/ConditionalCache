@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='conditional-cache',
-    version='0.1',
+    version='1.1.0',
     author='Eric-Canas',
     author_email='eric@ericcanas.com',
     url='https://github.com/Eric-Canas/ConditionalCache',

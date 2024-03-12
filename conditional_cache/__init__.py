@@ -1,1 +1,2 @@
-from .conditional_cache import conditional_lru_cache
+from .conditional_cache import conditional_lru_cache, conditional_ttl_cache
+from .conditional_cache import conditional_lru_cache as lru_cache, conditional_ttl_cache as ttl_cache

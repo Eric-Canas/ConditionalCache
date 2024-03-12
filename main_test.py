@@ -1,7 +1,7 @@
-from conditional_cache import conditional_lru_cache
+from conditional_cache import lru_cache, ttl_cache
 
 # Example usage
-@conditional_lru_cache(maxsize=32, condition_func=lambda result: result == True)
+@ttl_cache(maxsize=32, ttl=5, condition=lambda result: result == True)
 def foo(item_id: int) -> bool:
     # Simulate a database query
     print(f"Executed for: {item_id}")
