@@ -22,8 +22,8 @@ from conditional_cache import lru_cache
 # Memoize the returned element only when it is different than "Not Found"
 @lru_cache(maxsize=64, condition=lambda db_value: db_value != "Not Found")
 def element_exists_in_db(element_id: int) -> str:
+  
   print(f"Asked to DB: {element_id}")
-
   # For the example let's consider that even elements exists.
   return "Found" if element_id % 2 == 0 else "Not Found"
 ```
