@@ -55,7 +55,7 @@ print(f"Returned: {element_exists_in_db(element_id=2)}")
 
 If during your execution, you perform an action that invalidate a given function result, you can actively remove that element cache:
 
-```bash
+```python
 # Will return the result that was memoized before
 print(f"Returned: {element_exists_in_db(element_id=2)}\n")
 # Remove the element from the cache
