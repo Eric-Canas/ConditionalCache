@@ -14,3 +14,41 @@ pip install conditional-cache
 ```
 
 ## Usage
+Working with **ConditionalCache** is as simple and straight-forward as using as using [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache), as it works under the same interface (and is in fact interoperable).
+
+```python
+from conditional_cache import lru_cache
+
+# Memoize the returned element only when it is different than "Not Found"
+@lru_cache(maxsize=64, condition=lambda db_value: db_value != "Not Found")
+def element_exists_in_db(element_id: int) -> str:
+  # For the example let's consider that even elements exists.
+  exists_in_db = element_id % 2 == 0
+  print(f"Asked to DB: {element_id}")
+  return "Found" if exists_in_db else "Not Found"
+```
+
+When we will call this function, it will be execute only once for even numbers, and always for odds.
+
+```python
+# Will be executed, and not memoized
+print(f"Returned: {element_exists_in_db(element_id=1)}")
+# Will be executed again
+print(f"Returned: {element_exists_in_db(element_id=1)}\n")
+
+# Will be executed and memoized
+print(f"Returned: {element_exists_in_db(element_id=2)}")
+# Will return the memoized result without executing again
+print(f"Returned: {element_exists_in_db(element_id=2)}")
+```
+
+```bash
+>> Asked to DB: 1
+>> Returned: Not Found
+>> Asked to DB: 1
+>> Returned: Not Found
+
+>> Asked to DB: 2
+>> Returned: Found
+>> Returned: Found
+```
