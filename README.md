@@ -14,7 +14,7 @@ pip install conditional-cache
 ```
 
 ## Usage
-Working with **ConditionalCache** is as simple and straight-forward as using [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache), as it works under the same interface (and is in fact interoperable).
+Working with **ConditionalCache** is as simple and straight-forward as using [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache), as it works under the same interface.
 
 ```python
 from conditional_cache import lru_cache
