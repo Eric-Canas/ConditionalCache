@@ -28,7 +28,7 @@ def element_exists_in_db(element_id: int) -> str:
   return "Found" if exists_in_db else "Not Found"
 ```
 
-When we will call this function, it will be execute only once for even numbers, and always for odds.
+When we will call this function, it will be execute **only once** for even numbers, and always for odds.
 
 ```python
 # Will be executed, and not memoized
@@ -47,6 +47,28 @@ print(f"Returned: {element_exists_in_db(element_id=2)}")
 >> Returned: Not Found
 >> Asked to DB: 1
 >> Returned: Not Found
+
+>> Asked to DB: 2
+>> Returned: Found
+>> Returned: Found
+```
+
+If during your execution, you perform an action that invalidate a given function result, you can actively remove that element cache:
+
+```bash
+# Will return the result that was memoized before
+print(f"Returned: {element_exists_in_db(element_id=2)}\n")
+# Remove the element from the cache
+element_exists_in_db.cache_remove(element_id=2)
+
+# Will be executed again and memoized
+print(f"Returned: {element_exists_in_db(element_id=2)}")
+# Will return the memoized result
+print(f"Returned: {element_exists_in_db(element_id=2)}")
+```
+
+```bash
+>> Returned: Found
 
 >> Asked to DB: 2
 >> Returned: Found
