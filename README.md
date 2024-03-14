@@ -78,7 +78,7 @@ print(f"Returned: {element_exists_in_db(element_id=2)}")
 ## API Reference
 
 ### conditional_cache.lru_cache(maxsize: int = 128, typed: bool = False, condition: callable = lambda x: True)
-Initialize the USBMonitor instance. It will allow to inspect and monitor connected devices
+An Least Recently Used. It works the same way that [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache) but accepting **conditional storage** and **selective item removing** through <decorated_function>.cache_remove(**args)
 
 - `maxsize`: **int**. The maximum amount of elements to keep cached. Once the cache is full, new elements will start to override oldest ones.
 - `typed`: **bool**. Works the same way that [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache). If `True`, function arguments of different types will be cached separately.
