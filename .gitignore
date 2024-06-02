@@ -10,3 +10,5 @@ circular_dict.egg-info/
 build/
 
 conditional_cache.egg-info/
+
+.env
