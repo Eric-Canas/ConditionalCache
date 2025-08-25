@@ -46,13 +46,24 @@ print("After adding large and another small item, cache contains:", list(bar.__c
 
 # Unhashable args test
 print("\n=== UNHASHABLE ARGS TEST ===")
+
 @lru_cache(maxsize=32, condition=lambda result: True)
 def baz(a: list, b: dict) -> str:
     print(f"Executed for: {a}, {b}")
     return str(a) + str(b)
 
-# explode
-try:
-    baz([1, 2, 3], {'key': 'value'})
-except TypeError as e:
-    print("Caught expected TypeError for unhashable args:", e)
+# No TypeError now; second call should hit cache
+print(baz([1,2,3], {'key': 'value'}))
+print(baz([1,2,3], {'key': 'value'}))  # from cache (no print inside)
+
+# With a complex object
+class CustomObj:
+    def __init__(self, val):
+        self.val = val
+    def __repr__(self):
+        return f"CustomObj({self.val})"
+
+custom_obj_1 = CustomObj(1)
+custom_obj_2 = CustomObj(2)
+print(baz([custom_obj_1, custom_obj_2], {'obj': custom_obj_1}))
+print(baz([custom_obj_1, custom_obj_2], {'obj': custom_obj_1}))  # from cache (no print inside)
