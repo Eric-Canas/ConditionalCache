@@ -21,7 +21,11 @@ def conditional_lru_cache(maxsize: int=128, maxsize_bytes: int | None = None, ty
 
             # Conditionally cache the result
             if condition(result):
-                cache[key] = result
+                try:
+                    cache[key] = result
+                except MemoryError:
+                    # Item too large for the byte budget: don't store it
+                    pass
 
             return result
 
@@ -62,7 +66,11 @@ def conditional_ttl_cache(maxsize: int = 128, maxsize_bytes: int | None = None, 
             # Conditionally cache the result
             if condition(result):
                 # Store with current timestamp
-                cache[key] = (time(), result)
+                try:
+                    cache[key] = (time(), result)
+                except MemoryError:
+                    # Item too large for the byte budget: don't store it
+                    pass
 
             return result
 
