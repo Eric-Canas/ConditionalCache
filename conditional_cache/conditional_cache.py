@@ -3,8 +3,8 @@ from functools import wraps, _make_key
 from circular_dict import CircularDict
 from time import time
 
-def conditional_lru_cache(maxsize: int=128, typed: bool = False, condition: callable = lambda x: True):
-    cache = CircularDict(maxlen=maxsize)
+def conditional_lru_cache(maxsize: int=128, maxsize_bytes: int | None = None, typed: bool = False, condition: callable = lambda x: True):
+    cache = CircularDict(maxlen=maxsize, maxsize_bytes=maxsize_bytes)
 
     def decorator(func):
         @wraps(func)
@@ -30,7 +30,6 @@ def conditional_lru_cache(maxsize: int=128, typed: bool = False, condition: call
             key = _make_key(args, kwargs, typed)
             cache.pop(key, None)  # Use pop to avoid KeyError if the key is not present
 
-
         wrapper.cache_remove = cache_remove
         # Expose a method to clear the full cache
         wrapper.cache_clear = lambda: cache.clear()
@@ -39,8 +38,8 @@ def conditional_lru_cache(maxsize: int=128, typed: bool = False, condition: call
 
     return decorator
 
-def conditional_ttl_cache(maxsize: int = 128, typed: int = False, ttl: int = 60, condition: callable = lambda x: True):
-    cache = CircularDict(maxlen=maxsize)
+def conditional_ttl_cache(maxsize: int = 128, maxsize_bytes: int | None = None, typed: int = False, ttl: int = 60, condition: callable = lambda x: True):
+    cache = CircularDict(maxlen=maxsize, maxsize_bytes=maxsize_bytes)
 
     def decorator(func):
         @wraps(func)
