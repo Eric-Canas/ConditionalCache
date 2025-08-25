@@ -22,7 +22,7 @@ from conditional_cache import lru_cache
 # Memoize the returned element only when it is different than "Not Found"
 @lru_cache(maxsize=64, condition=lambda db_value: db_value != "Not Found")
 def element_exists_in_db(element_id: int) -> str:
-  
+
   print(f"Asked to DB: {element_id}")
   # For the example let's consider that even elements exists.
   return "Found" if element_id % 2 == 0 else "Not Found"
@@ -75,11 +75,44 @@ print(f"Returned: {element_exists_in_db(element_id=2)}")
 >> Returned: Found
 ```
 
+### Controlling cache size by memory
+In addition to `maxsize` (number of elements), you can also limit the cache by **memory usage** with `maxsize_bytes`.
+
+```python
+from conditional_cache import lru_cache
+
+@lru_cache(maxsize_bytes=1024)  # keep up to ~1 KB of cached data
+def heavy_query(x: int) -> str:
+    print("Executed:", x)
+    return "X" * (x * 100)
+
+heavy_query(1)   # Cached
+heavy_query(10)  # May evict older entries if too large
+```
+
+This way you can avoid **overflowing** your memory if you need to cache large objects like images. If a single result is **too large** to ever fit in the cache, it will just not be stored. 
+
+### Unhashable arguments
+Unlike `functools`, **ConditionalCache** supports common unhashable types like `list`, `dict`, or `set` as arguments. They are transparently converted to hashable equivalents to avoid headaches.
+
+```python
+from conditional_cache import lru_cache
+
+@lru_cache(maxsize=32)
+def stringify(a: list, b: dict) -> str:
+    print("Executed:", a, b)
+    return str(a) + str(b)
+
+print(stringify([1,2,3], {"x": 42}))
+print(stringify([1,2,3], {"x": 42}))  # retrieved from cache
+```
+
 ## API Reference
 
-### conditional_cache.lru_cache(maxsize: int = 128, typed: bool = False, condition: callable = lambda x: True)
+### conditional_cache.lru_cache(maxsize: int = 128, maxsize_bytes: int | None = None, typed: bool = False, condition: callable = lambda x: True)
 An _Least Recently Used_ Cache. It works the same way that [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache) but accepting **conditional storage** and **selective item removing** through <decorated_function>.cache_remove(**args)
 
 - `maxsize`: **int**. The maximum amount of elements to keep cached. Once the cache is full, new elements will start to override oldest ones.
+- `maxsize_bytes`: **int | None**. The maximum amount of memory (in bytes, as estimated by `sys.getsizeof`) to keep cached. Useful when caching large objects. If a single item is larger than this budget, it will simply not be cached.
 - `typed`: **bool**. Works the same way that [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache). If `True`, function arguments of different types will be cached separately.
 - `condition`: **callable**. It must be a function that receives a single parameter as input (the output of the _decorated_ method) and returns a `boolean`. `True` if the result should be cached or `False` if it should not.
