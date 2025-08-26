@@ -90,7 +90,26 @@ heavy_query(1)   # Cached
 heavy_query(10)  # May evict older entries if too large
 ```
 
-This way you can avoid **overflowing** your memory if you need to cache large objects like images. If a single result is **too large** to ever fit in the cache, it will just not be stored. 
+This way you can avoid **overflowing** your memory if you need to cache large objects like images. If a single result is **too large** to ever fit in the cache, it will just not be stored.
+
+### Time-based expiration (TTL)
+Use `ttl_cache` when you want cached entries to automatically expire after a given number of seconds.
+
+```python
+import time
+from conditional_cache import ttl_cache
+
+@ttl_cache(ttl=3, maxsize=64, condition=lambda r: r is not None)
+def fetch_user(user_id: int) -> dict | None:
+    print("Fetching:", user_id)
+    return {"id": user_id}
+
+fetch_user(1)      # Executed and cached
+time.sleep(1)
+fetch_user(1)      # Retrieved from cache
+time.sleep(3)
+fetch_user(1)      # Expired -> executed again
+```
 
 ### Unhashable arguments
 Unlike `functools`, **ConditionalCache** supports common unhashable types like `list`, `dict`, or `set` as arguments. They are transparently converted to hashable equivalents to avoid headaches.
@@ -116,3 +135,12 @@ An _Least Recently Used_ Cache. It works the same way that [functools.lru_cache]
 - `maxsize_bytes`: **int | None**. The maximum amount of memory (in bytes, as estimated by `sys.getsizeof`) to keep cached. Useful when caching large objects. If a single item is larger than this budget, it will simply not be cached.
 - `typed`: **bool**. Works the same way that [functools.lru_cache](https://docs.python.org/es/3/library/functools.html#functools.lru_cache). If `True`, function arguments of different types will be cached separately.
 - `condition`: **callable**. It must be a function that receives a single parameter as input (the output of the _decorated_ method) and returns a `boolean`. `True` if the result should be cached or `False` if it should not.
+
+### conditional_cache.ttl_cache(maxsize: int = 128, maxsize_bytes: int | None = None, typed: bool = False, ttl: int = 60, condition: callable = lambda x: True)
+A _Time-To-Live_ cache. Behaves like `lru_cache` with the same conditional storage and selective removal features, but cached entries automatically expire after `ttl` seconds.
+
+- `maxsize`: **int**. Maximum number of elements to keep cached.
+- `maxsize_bytes`: **int | None**. Maximum memory budget for cached data. Items larger than this budget are not cached.
+- `typed`: **bool**. If `True`, function arguments of different types are cached separately.
+- `ttl`: **int**. Time-to-live in seconds for each cached entry.
+- `condition`: **callable**. Receives the function output and returns `True` if it should be cached.
